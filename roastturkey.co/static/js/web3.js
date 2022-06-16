@@ -1,4 +1,4 @@
-const Address = "0x20D93f71cD42A0142b8598E53Ad9D4832755345C";
+const Address = "0x4B8052746FD51845293ab7b8F6d3870227D08696";
 const ABI = [{"constant":true,"inputs":[],"name":"ceoAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMyMiners","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"initialized","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"sellEggs","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"seedMarket","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"ref","type":"address"}],"name":"hatchEggs","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getMyEggs","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ref","type":"address"}],"name":"sellEggs","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"eggs","type":"uint256"}],"name":"calculateEggSell","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ref","type":"address"}],"name":"buyEggs","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}];
 const metamaskChainID = 97;
 const metamaskHexChainID = '0x61';
@@ -76,7 +76,7 @@ async function getContractInfo() {
 async function go() {
 	const chainId = await web3.eth.getChainId();
 	if(chainId == metamaskChainID) {
-		//抓取網址的地址
+		// The address of the fetched URL
 		if(location.href.includes('ref')) {
 			const address = location.href.split('ref=')[1]
 			const price = web3.utils.toWei($("#price").val(), 'ether');	
@@ -103,7 +103,7 @@ async function go() {
 async function goAgain() {
 	const chainId = await web3.eth.getChainId();
 	if(chainId == metamaskChainID) {		
-		//放自己的地址
+		// put your own address
 		myContract.methods.hatchEggs(coinbase).send({
 			from: coinbase,
 		}).then(function (result) {
@@ -137,7 +137,7 @@ async function copyButton() {
     textarea.select();
     document.execCommand('copy', true);
     document.body.removeChild(textarea);
-    alert("複製成功!");
+    alert("Copy successfully!");
 }
 
 ethereum.on("accountsChanged", (accounts) => {
